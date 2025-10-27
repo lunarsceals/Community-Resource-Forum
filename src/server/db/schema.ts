@@ -319,7 +319,7 @@ export const sessions = mysqlTable("session", (d) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
-    references: [profiles.id],
+    references: [users.id],
   }),
 }));
 

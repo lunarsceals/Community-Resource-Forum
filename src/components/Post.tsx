@@ -131,7 +131,7 @@ export default function Post({
             <VoteButton
               target={{ postId: post.id }}
               score={post.score ?? 0}
-              value={vote}
+              value={vote ? vote.value : null}
             />
           </div>
         </div>
