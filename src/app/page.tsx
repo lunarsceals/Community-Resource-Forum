@@ -5,15 +5,14 @@ import Link from "next/link";
 import {
   PiCalendarBlank,
   PiChatCircleTextBold,
-  PiDotsThreeBold,
   PiHash,
   PiShareFatBold,
   PiXBold,
 } from "react-icons/pi";
 import Avatar from "~/components/Avatar";
 import FlagButton from "~/components/FlagButton";
-import VoteButton from "~/components/VoteButton";
 import ShareDropdown from "~/components/ShareDropdown";
+import VoteButton from "~/components/VoteButton";
 import formatEventTime from "~/lib/formatEventTime";
 import { getSessionUser } from "~/server/auth";
 import { db } from "~/server/db";
@@ -143,7 +142,6 @@ export default async function HomePage({
           ))}
         </h1>
       )}
-
       {Array.from(postsResult.values()).map(
         ({ post, author, event, vote, tags }) => (
           <article
@@ -167,11 +165,9 @@ export default async function HomePage({
                   </span>
                 </Link>
 
-                <FlagButton postId={post.id} userId={session?.userId ?? ""} />
-
-                <button className="-m-0.5 rounded-full p-0.5 hover:bg-gray-200">
-                  <PiDotsThreeBold />
-                </button>
+                {session && (
+                  <FlagButton postId={post.id} userId={session?.userId} />
+                )}
               </div>
 
               {post.content && (
@@ -201,14 +197,12 @@ export default async function HomePage({
                       {formatEventTime(event)}
                     </span>
                   </span>
+
+                  <button className="rounded-xs px-2 py-0.5 text-xs font-bold text-sky-800 uppercase ring-sky-800/50 hover:bg-sky-100 hover:ring">
+                    RSVP
+                  </button>
                 </Link>
               )}
-
-              <FlagButton postId={post.id} userId={session?.userId ?? ""} />
-
-              <button className="-m-0.5 rounded-full p-0.5 hover:bg-gray-200">
-                <PiDotsThreeBold />
-              </button>
             </div>
 
             <div className="flex flex-wrap items-center justify-start gap-y-1 pb-2 text-xs">
@@ -238,20 +232,9 @@ export default async function HomePage({
                 className="flex items-center gap-2 rounded-full px-2 py-1 leading-none hover:bg-sky-100 hover:ring hover:ring-sky-800"
                 href={`/discussion/${post.id}?comment`}
               >
-                <span className="relative">
-                  <PiCalendarBlank />
-                  <span className="absolute inset-0 top-1/2 w-full -translate-y-1/2 pt-px text-center text-[0.55rem] font-bold">
-                    {getDate(event!.start)}
-                  </span>
-                </span>
-
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="-mt-0.5 overflow-x-hidden text-sm/[1.25] overflow-ellipsis">
-                    {event!.title}
-                  </span>
-                  <span className="text-[0.6rem]/[1] font-bold text-gray-600">
-                    {formatEventTime(event!)}
-                  </span>
+                <PiChatCircleTextBold />
+                <span className="text-xs font-semibold">
+                  {post.commentCount}
                 </span>
               </Link>
 
@@ -275,7 +258,6 @@ export default async function HomePage({
           </article>
         ),
       )}
-
       {postsResult.size === 0 && (
         <p className="max-w-prose text-center text-sm text-gray-600">
           There aren&rsquo;t any posts to display yet. Try signing in and
