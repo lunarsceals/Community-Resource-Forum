@@ -98,7 +98,7 @@ export const postVotesRelations = relations(postVotes, ({ one }) => ({
 }));
 
 export const comments = mysqlTable(
-  "comment",
+  "comments",
   (d) => ({
     id: d.varchar({ length: 255 }).primaryKey().$defaultFn(createId),
     content: d.text().notNull(),
@@ -176,6 +176,7 @@ export const tags = mysqlTable("tag", (d) => ({
 export const tagsRelations = relations(tags, ({ many }) => ({
   posts: many(tagsToPosts),
   subscribers: many(subscriptions),
+  children: many(tags),
 }));
 
 export const tagsToPosts = mysqlTable(
@@ -226,8 +227,8 @@ export const users = mysqlTable(
       .primaryKey()
       .references(() => profiles.id),
     email: varchar("email", { length: 255 }).notNull(),
-    createdAt: d.timestamp().defaultNow().notNull(),
-    updatedAt: d.timestamp().onUpdateNow(),
+    createdAt: d.timestamp("created_at").defaultNow().notNull(),
+    updatedAt: d.timestamp("updated_at").onUpdateNow(),
   }),
   (t) => [uniqueIndex("email_idx").on(lower(t.email))],
 );
@@ -319,7 +320,7 @@ export const sessions = mysqlTable("session", (d) => ({
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
-    references: [users.id],
+    references: [profiles.id],
   }),
 }));
 
